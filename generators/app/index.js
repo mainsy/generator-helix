@@ -9,7 +9,8 @@ module.exports = class extends yeoman {
 	constructor(args, opts) {
 		super(args, opts);
 
-		this.option('solutionName', { type: String, required: false, desc: 'the name of the Helix solution' });
+		this.argument('SolutionType', { type: String, required: false, desc: 'Type of the solution, can be emptyHelix or pentiahelix' });
+		this.argument('solutionName', { type: String, required: false, desc: 'the name of the Helix solution' });
 	}
 
 	init() {
@@ -18,100 +19,123 @@ module.exports = class extends yeoman {
 	}
 
 	askForSolutionType() {
-		var questions = [{
-			type: 'list',
-			name: 'SolutionType',
-			message: 'What type of solution do you want to create?',
-			choices: [{
-				name: 'Empty Helix solution',
-				value: 'emptyhelix'
-			},{
-				name: 'Helix solution with Pentia tools',
-				value: 'pentiahelix'
-			}]
-		}, {
-			type: 'confirm',
-			name: 'installDeps',
-			message: 'Would you like to auto-install Pentia tools?',
-			default: false,
-			when: function(answers) {
-				return answers.SolutionType === 'pentiahelix';
-			}
-		}];
+		if (!this.options.SolutionType) {
+			var questions = [{
+				type: 'list',
+				name: 'SolutionType',
+				message: 'What type of solution do you want to create?',
+				choices: [{
+					name: 'Empty Helix solution',
+					value: 'emptyhelix'
+				}, {
+					name: 'Helix solution with Pentia tools',
+					value: 'pentiahelix'
+				}]
+			}, {
+				type: 'confirm',
+				name: 'installDeps',
+				message: 'Would you like to auto-install Pentia tools?',
+				default: false,
+				when: function (answers) {
+					return answers.SolutionType === 'pentiahelix';
+				}
+			}];
 
-		var done = this.async();
-
-		this.prompt(questions).then(function(answers) {
-			this.type = answers.SolutionType;
-			this.installDeps = answers.installDeps;
-			done();
-		}.bind(this));
+			var done = this.async();
+			this.prompt(questions).then(function (answers) {
+				this.type = answers.SolutionType;
+				this.installDeps = answers.installDeps;
+				done();
+			}.bind(this));
+		}
+		else {
+			this.settings = {};
+			this.type = this.options.SolutionType;
+			this.installDeps = true;
+		}
 	}
 
 	askForSolutionSettings() {
-		var questions = [{
-			type: 'input',
-			name: 'SolutionName',
-			message: 'Name of your Helix solution',
-			default: this.appname
-		},
-		{
-			type:'input',
-			name:'sourceFolder',
-			message:'Source code folder name', 
-			default: 'src',
-			store: true
-		}];
+		if (!this.options.solutionName) {
+			var questions = [{
+				type: 'input',
+				name: 'SolutionName',
+				message: 'Name of your Helix solution',
+				default: this.appname
+			},
+			{
+				type: 'input',
+				name: 'sourceFolder',
+				message: 'Source code folder name',
+				default: 'src',
+				store: true
+			}];
 
-		var done = this.async();
-		this.prompt(questions).then(function(answers) {
-			this.settings = answers;
-			this.sourceFolder = answers.sourceFolder;
-			this.SolutionName = answers.SolutionName;
-			done();
-		}.bind(this));
+			var done = this.async();
+			this.prompt(questions).then(function (answers) {
+				this.settings = answers;
+				this.sourceFolder = answers.sourceFolder;
+				this.SolutionName = answers.SolutionName;
+				done();
+			}.bind(this));
+		}
+		else {
+			this.settings.sourceFolder = 'src';
+			this.settings.SolutionName = this.options.solutionName;
+		}
 	}
 
 	askTargetFrameworkVersion() {
-		var questions = [{
-			type: 'list',
-			name: 'target',
-			message: 'Choose target .net framework version?',
-			choices: [
-				{
-					name: '.net 4.6.1',
-					value: 'v4.6.1'
-				}, {
-					name: '.net 4.6',
-					value: 'v4.6'
-				}, {
-					name: '.net 4.5.2',
-					value: 'v4.5.2'
-				}],
-			store: true
-		}];
+		if (!this.options.solutionName) {
+			var questions = [{
+				type: 'list',
+				name: 'target',
+				message: 'Choose target .net framework version?',
+				choices: [
+					{
+						name: '.net 4.6.1',
+						value: 'v4.6.1'
+					}, {
+						name: '.net 4.6',
+						value: 'v4.6'
+					}, {
+						name: '.net 4.5.2',
+						value: 'v4.5.2'
+					}],
+				store: true
+			}];
 
-		var done = this.async();
-		this.prompt(questions).then(function(answers) {
-			this.target = answers.target;
-			done();
-		}.bind(this));
+			var done = this.async();
+			this.prompt(questions).then(function (answers) {
+				this.target = answers.target;
+				done();
+			}.bind(this));
+		}
+		else {
+			this.target = 'v4.6.1';
+		}
 	}
 
 
 	askSiteUrl() {
-		var questions = [{
-			type: 'input',
-			name: 'LocalWebsiteUrl',
-			message: 'Enter the local website URL',
-			default: 'http://'+ this.settings.SolutionName + '.local'
-		}];
-		var done = this.async();
-		this.prompt(questions).then(function(answers) {
-			this.localWebsiteUrl = answers.LocalWebsiteUrl;
+		if (!this.options.solutionName) {
+			var questions = [{
+				type: 'input',
+				name: 'LocalWebsiteUrl',
+				message: 'Enter the local website URL',
+				default: 'http://' + this.settings.SolutionName + '.local'
+			}];
+			var done = this.async();
+			this.prompt(questions).then(function (answers) {
+				this.localWebsiteUrl = answers.LocalWebsiteUrl;
+				this._buildTemplateData();
+				done();
+			}.bind(this));
+		}
+		else {
+			this.settings.localWebsiteUrl = 'http://' + this.settings.SolutionName + '.local';
 			this._buildTemplateData();
-			done();
-		}.bind(this));
+		}
 	}
 
 	_buildTemplateData() {
@@ -128,17 +152,18 @@ module.exports = class extends yeoman {
 	}
 
 	_writeLayers() {
-		var layers = [ 'Project', 'Feature', 'Foundation'];
-			
+		var layers = ['Project', 'Feature', 'Foundation'];
+
 		for (var i = 0; i < layers.length; i++) {
-				
-			var destinationDirectory = path.join(this.settings.sourceFolder,layers[i]);
+
+			var destinationDirectory = path.join(this.settings.sourceFolder, layers[i]);
+			this.log(destinationDirectory);
 			mkdir.sync(destinationDirectory);
 
 			var layer = layers[i];
 			var layerDocumentationFileName = layer + '/' + layer + '-layer.md';
 			var destinationFileName = path.join(this.destinationPath(destinationDirectory), layer + '-layer.md');
-			this.fs.copy(this.templatePath(layerDocumentationFileName),this.destinationPath(destinationFileName));
+			this.fs.copy(this.templatePath(layerDocumentationFileName), this.destinationPath(destinationFileName));
 		}
 	}
 
@@ -156,7 +181,7 @@ module.exports = class extends yeoman {
 
 	_copyToEnvironmentProject(template, destination) {
 		var environmentDestination = path.join(this.settings.sourceFolder, 'Project/Environment/code');
-		this._copyTemplateFile(template,path.join(environmentDestination, destination));
+		this._copyTemplateFile(template, path.join(environmentDestination, destination));
 	}
 
 	_copyPentiaSolutionItems() {
@@ -178,14 +203,14 @@ module.exports = class extends yeoman {
 	writing() {
 		this._writeLayers();
 		switch (this.type) {
-			
-		case 'emptyhelix':
-			this._copyEmptySolutionItems();
-			break;
 
-		case 'pentiahelix':
-			this._copyPentiaSolutionItems();
-			break;
+			case 'emptyhelix':
+				this._copyEmptySolutionItems();
+				break;
+
+			case 'pentiahelix':
+				this._copyPentiaSolutionItems();
+				break;
 		}
 	}
 
