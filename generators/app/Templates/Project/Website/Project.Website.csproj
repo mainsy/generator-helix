@@ -7,12 +7,12 @@
     <ProductVersion>
     </ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid><%= environmentguid %></ProjectGuid>
+    <ProjectGuid><%= websiteguid %></ProjectGuid>
     <ProjectTypeGuids>{349c5851-65df-11da-9384-00065b846f21};{fae04ec0-301f-11d3-bf4b-00c04f79efbc}</ProjectTypeGuids>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Project.Environment</RootNamespace>
-    <AssemblyName>Project.Environment</AssemblyName>
+    <RootNamespace>Project.<%= solutionname %>.Website</RootNamespace>
+    <AssemblyName>Project.<%= solutionname %>.Website</AssemblyName>
     <TargetFrameworkVersion><%= target %></TargetFrameworkVersion>
     <UseIISExpress>true</UseIISExpress>
     <IISExpressSSLPort />
@@ -68,6 +68,11 @@
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <None Include="Properties\PublishProfiles\Local.pubxml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Controllers\" />
+    <Folder Include="Models\" />
+    <Folder Include="Views\<%= solutionname %>\web.config" />
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>

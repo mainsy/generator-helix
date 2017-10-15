@@ -1,16 +1,41 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 14
-VisualStudioVersion = 14.0.25420.1
+# Visual Studio 15
+VisualStudioVersion = 15.0.26730.12
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "1. Project", "1. Project", "{<%= projectguid %>}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "0 - Configuration", "0 - Configuration", "{<%= configguid %>}"
+	ProjectSection(SolutionItems) = preProject
+		.gitattributes = .gitattributes
+		.gitignore = .gitignore
+		gulp-config.js = gulp-config.js
+		publishsettings.targets = publishsettings.targets
+	EndProjectSection
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "2. Feature", "2. Feature", "{<%= featureguid %>}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "1 - Project", "1 - Project", "{<%= projectguid %>}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "3. Foundation", "3. Foundation", "{<%= foundationguid %>}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "2 - Feature", "2 - Feature", "{<%= featureguid %>}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Environment", "Environment", "{<%= environmentfolderguid %>}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "3 - Foundation", "3 - Foundation", "{<%= foundationguid %>}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Environment", "<%= sourceFolder %>\Project\Environment\code\Project.Environment.csproj", "{<%= environmentguid %>}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "4 - Tests", "4 - Tests", "{0D8FEF56-4A7F-4B86-B698-7B545CBEA476}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "5 - Scripts", "5 - Scripts", "{4855590D-3A13-4CE1-84D2-A30285E79665}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "6 - Documentation", "6 - Documentation", "{EC6D77B3-3249-4535-83A6-3E39C44FAF1E}"
+	ProjectSection(SolutionItems) = preProject
+		readme.md = readme.md
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Common", "Common", "{<%= commonfolderguid %>}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Common", "<%= sourceFolder %>\Project\Common\code\Project.Common.Website.csproj", "{<%= commonguid %>}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "<%= solutionname %>", "<%= solutionname %>", "{<%= websitefolderguid %>}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "<%= solutionname %>", "<%= sourceFolder %>\Project\<%= solutionname %>\code\Project.<%= solutionname %>.Website.csproj", "{<%= websiteguid %>}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Specs", "Specs", "{<%= specguid %>}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Unit Tests", "Unit Tests", "{<%= unittestguid %>}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -24,28 +49,49 @@ Global
 		Release|x64 = Release|x64
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{<%= environmentguid %>}.always|Any CPU.ActiveCfg = Release|Any CPU
-		{<%= environmentguid %>}.always|Any CPU.Build.0 = Release|Any CPU
-		{<%= environmentguid %>}.always|x64.ActiveCfg = Release|Any CPU
-		{<%= environmentguid %>}.always|x64.Build.0 = Release|Any CPU
-		{<%= environmentguid %>}.ci|Any CPU.ActiveCfg = Release|Any CPU
-		{<%= environmentguid %>}.ci|Any CPU.Build.0 = Release|Any CPU
-		{<%= environmentguid %>}.ci|x64.ActiveCfg = Release|Any CPU
-		{<%= environmentguid %>}.ci|x64.Build.0 = Release|Any CPU
-		{<%= environmentguid %>}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{<%= environmentguid %>}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{<%= environmentguid %>}.Debug|x64.ActiveCfg = Debug|Any CPU
-		{<%= environmentguid %>}.Debug|x64.Build.0 = Debug|Any CPU
-		{<%= environmentguid %>}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{<%= environmentguid %>}.Release|Any CPU.Build.0 = Release|Any CPU
-		{<%= environmentguid %>}.Release|x64.ActiveCfg = Release|Any CPU
-		{<%= environmentguid %>}.Release|x64.Build.0 = Release|Any CPU
+		{<%= commonguid %>}.always|Any CPU.ActiveCfg = Release|Any CPU
+		{<%= commonguid %>}.always|Any CPU.Build.0 = Release|Any CPU
+		{<%= commonguid %>}.always|x64.ActiveCfg = Release|Any CPU
+		{<%= commonguid %>}.always|x64.Build.0 = Release|Any CPU
+		{<%= commonguid %>}.ci|Any CPU.ActiveCfg = Release|Any CPU
+		{<%= commonguid %>}.ci|Any CPU.Build.0 = Release|Any CPU
+		{<%= commonguid %>}.ci|x64.ActiveCfg = Release|Any CPU
+		{<%= commonguid %>}.ci|x64.Build.0 = Release|Any CPU
+		{<%= commonguid %>}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{<%= commonguid %>}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{<%= commonguid %>}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{<%= commonguid %>}.Debug|x64.Build.0 = Debug|Any CPU
+		{<%= commonguid %>}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{<%= commonguid %>}.Release|Any CPU.Build.0 = Release|Any CPU
+		{<%= commonguid %>}.Release|x64.ActiveCfg = Release|Any CPU
+		{<%= commonguid %>}.Release|x64.Build.0 = Release|Any CPU
+		{<%= websiteguid %>}.always|Any CPU.ActiveCfg = Release|Any CPU
+		{<%= websiteguid %>}.always|Any CPU.Build.0 = Release|Any CPU
+		{<%= websiteguid %>}.always|x64.ActiveCfg = Release|Any CPU
+		{<%= websiteguid %>}.always|x64.Build.0 = Release|Any CPU
+		{<%= websiteguid %>}.ci|Any CPU.ActiveCfg = Release|Any CPU
+		{<%= websiteguid %>}.ci|Any CPU.Build.0 = Release|Any CPU
+		{<%= websiteguid %>}.ci|x64.ActiveCfg = Release|Any CPU
+		{<%= websiteguid %>}.ci|x64.Build.0 = Release|Any CPU
+		{<%= websiteguid %>}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{<%= websiteguid %>}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{<%= websiteguid %>}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{<%= websiteguid %>}.Debug|x64.Build.0 = Debug|Any CPU
+		{<%= websiteguid %>}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{<%= websiteguid %>}.Release|Any CPU.Build.0 = Release|Any CPU
+		{<%= websiteguid %>}.Release|x64.ActiveCfg = Release|Any CPU
+		{<%= websiteguid %>}.Release|x64.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
-		{<%= environmentfolderguid %>} = {<%= projectguid %>}
-		{<%= environmentguid %>} = {<%= environmentfolderguid %>}
+		{<%= commonfolderguid %>} = {<%= projectguid %>}
+		{<%= commonguid %>} = {<%= commonfolderguid %>}
+		{<%= websitefolderguid %>} = {<%= projectguid %>}
+		{<%= websiteguid %>} = {<%= websitefolderguid %>}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {295DECAD-449F-43AD-B143-7A7F18FBEC2C}
 	EndGlobalSection
 EndGlobal

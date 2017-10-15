@@ -27,14 +27,12 @@ module.exports = class extends yeoman {
 			message: 'Name of your project.' + chalk.blue(' (Excluding layer prefix, name can not be empty)'),
 			default: this.options.ProjectName,
 			validate: util.validateProjectName
-		},
-		{
+		},{
 			type: 'confirm',
 			name: 'serialization',
 			message: 'Would you like to include Unicorn (serialization)?',
 			default : true
-		},
-		{
+		},{
 			type:'input',
 			name:'sourceFolder',
 			message:'Source code folder name',
@@ -199,7 +197,7 @@ module.exports = class extends yeoman {
 			this.settings.ProjectName, 
 			'code'
 		);
-		
+
 		this._copyProjectItems();
 
 		if(this.settings.serialization) 

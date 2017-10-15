@@ -50,6 +50,14 @@ module.exports = class extends yeoman {
 			when: function(answers){
 				return answers.SolutionType === 'fullhelix';
 			}
+		},{
+			type: 'confirm',
+			name: 'installWebsite',
+			message: 'Would you like to add a project website (project with the same name as the solution?',
+			default: true,
+			when: function(answers){
+				return answers.SolutionType === 'fullhelix';
+			}
 		}];
 
 		var done = this.async();
@@ -58,6 +66,7 @@ module.exports = class extends yeoman {
 			this.type = answers.SolutionType;
 			this.installDeps = answers.installDeps;
 			this.installCommon = answers.installCommon;
+			this.installWebsite = answers.installWebsite;
 			done();
 		}.bind(this));
 	}
@@ -135,11 +144,17 @@ module.exports = class extends yeoman {
 
 	_buildTemplateData() {
 		this.templatedata.solutionname = this.settings.SolutionName;
-		this.templatedata.environmentguid = guid.v4();
-		this.templatedata.environmentfolderguid = guid.v4();
+		this.templatedata.date = new Date().getFullYear();
+		this.templatedata.commonguid = guid.v4();
+		this.templatedata.commonfolderguid = guid.v4();
+		this.templatedata.websiteguid = guid.v4();
+		this.templatedata.websitefolderguid = guid.v4();
+		this.templatedata.configguid = guid.v4();
 		this.templatedata.projectguid = guid.v4();
 		this.templatedata.featureguid = guid.v4();
 		this.templatedata.foundationguid = guid.v4();
+		this.templatedata.specguid = guid.v4();
+		this.templatedata.unittestguid = guid.v4();
 		this.templatedata.sourceFolder = this.settings.sourceFolder;
 		this.templatedata.target = this.target;
 		this.templatedata.sitecoreversion = this.sitecoreversion;
@@ -184,6 +199,12 @@ module.exports = class extends yeoman {
 		this._copyTemplateFile(template, path.join(projectDestination, destination));
 	}
 
+	_copyAllItems(){
+		this._copySolutionItems();
+		this._copyCommonItems();
+		this._copyWebsiteItems();
+	}
+
 	_copySolutionItems(){
 		this._copyTemplateFile('_gulpfile.js', 'gulpfile.js');
 		this._copyTemplateFile('_solution.sln', this.settings.SolutionName + '.sln');
@@ -192,16 +213,55 @@ module.exports = class extends yeoman {
 		this._copyTemplateFile('_solution-config.json', 'solution-config.json');
 	}
 
-	_copyCommonItems(template, destination){
-		if(this.settings.installCommon){
-			var commonDestination = path.join(this.settings.sourceFolder, 'Project/Common/code');
-			this._copyTemplateFile(template,path.join(commonDestination, destination));
+	_copyCommonItems(){
+		if(this.installCommon){
 			mkdir.sync(path.join(this.settings.sourceFolder, 'Project/Common/code/Properties'));
-			this._copyToProject('Project/Common/web.config', 'Project', 'Common', 'web.config');
+			mkdir.sync(path.join(this.settings.sourceFolder, 'Project/Common/code/Areas/Common/Models'));
+			mkdir.sync(path.join(this.settings.sourceFolder, 'Project/Common/code/Areas/Common/Controllers'));
+			mkdir.sync(path.join(this.settings.sourceFolder, 'Project/Common/code/Areas/Common/Views'));
+	
+			this.fs.copyTpl(
+				this.templatePath('Project/Common/Views/web.config'),
+				this.destinationPath(path.join(this.settings.sourceFolder, 'Project/Common/code/Areas/Common/Views/web.config')), 
+				this.templatedata);
+
+			this.fs.copyTpl(
+				this.templatePath('Project/Common/Properties/AssemblyInfo.cs'),
+				this.destinationPath(
+					path.join(this.settings.sourceFolder, 'Project/Common/code/Properties/AssemblyInfo.cs')),
+					this.templatedata);
+
 			this._copyToProject('Project/Common/packages.config', 'Project', 'Common', 'packages.config');
-			this._copyToProject('Project/Common/Properties/AssemblyInfo.cs', 'Project', 'Common', 'Properties/AssemblyInfo.cs');
 			this._copyToProject('Project/Common/Properties/PublishProfiles/local.pubxml', 'Project', 'Common', 'Properties/PublishProfiles/local.pubxml');
-			this._copyToProject('Project/Common/Project.Environment.csproj', 'Project', 'Common', 'Project.Common.csproj');
+			this._copyToProject('Project/Common/Web.config', 'Project', 'Common', 'Web.config');
+			this._copyToProject('Project/Common/Project.Common.Website.csproj', 'Project', 'Common', 'Project.Common.Website.csproj');
+		}
+	}
+
+	_copyWebsiteItems(){
+		if(this.installWebsite){
+			mkdir.sync(path.join(this.settings.sourceFolder, 'Project', this.settings.SolutionName, 'code/Properties'));
+			mkdir.sync(path.join(this.settings.sourceFolder, 'Project', this.settings.SolutionName, 'code/Areas', this.settings.SolutionName ,'Models'));
+			mkdir.sync(path.join(this.settings.sourceFolder, 'Project', this.settings.SolutionName, 'code/Areas', this.settings.SolutionName ,'Controllers'));
+			mkdir.sync(path.join(this.settings.sourceFolder, 'Project', this.settings.SolutionName, 'code/Areas', this.settings.SolutionName ,'Views'));
+	
+			this.fs.copyTpl(
+				this.templatePath('Project/Website/Views/web.config'),
+				this.destinationPath(
+					path.join(this.settings.sourceFolder, 'Project', this.settings.SolutionName, 'code/Areas', this.settings.SolutionName ,'Views/web.config')), 
+					this.templatedata);
+
+			this.fs.copyTpl(
+				this.templatePath('Project/Website/Properties/AssemblyInfo.cs'),
+				this.destinationPath(
+					path.join(this.settings.sourceFolder, 'Project', this.settings.SolutionName, '/code/Properties/AssemblyInfo.cs')),
+					this.templatedata);
+
+			this._copyToProject('Project/Website/packages.config', 'Project', this.settings.SolutionName, 'packages.config');
+			this._copyToProject('Project/Website/Properties/AssemblyInfo.cs', 'Project', this.settings.SolutionName, 'Properties/AssemblyInfo.cs');
+			this._copyToProject('Project/Website/Properties/PublishProfiles/local.pubxml', 'Project', this.settings.SolutionName, 'Properties/PublishProfiles/local.pubxml');
+			this._copyToProject('Project/Website/Web.config', 'Project', this.settings.SolutionName, 'Web.config');
+			this._copyToProject('Project/Website/Project.Website.csproj', 'Project', this.settings.SolutionName, 'Project.' + this.settings.SolutionName + '.csproj');
 		}
 	}
 
@@ -212,7 +272,7 @@ module.exports = class extends yeoman {
 			this._copyEmptySolutionItems();
 			break;
 		case 'fullhelix':
-			this._copyAllAssets();
+			this._copyAllItems();
 			break;
 		}
 	}
