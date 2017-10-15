@@ -10,7 +10,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
 [assembly: AssemblyProduct("<%= layerprefixedprojectname %>")]
-[assembly: AssemblyCopyright("Copyright ©  2017")]
+[assembly: AssemblyCopyright("Copyright ©  <%= date %>")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

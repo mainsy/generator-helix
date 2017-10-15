@@ -1,5 +1,5 @@
 {
-  "name": "generator-helix",
+  "name": "generator-phelix",
   "version": "1.3.1",
   "description": "yeoman generator for Helix style Sitecore projects",
   "main": "index.js",
@@ -10,21 +10,22 @@
     "yeoman-generator",
     "sitecore",
     "helix",
+    "phelix",
     "generator",
     "yeoman"
   ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/PentiaLabs/generator-helix"
+    "url": "https://github.com/mainsy/generator-phelix"
   },
   "maintainers": [
-    "Pentia <dev@pentia.dk> (http://www.pentia.dk)"
+    "Paul <hello@paulmains.com> (http://www.paulmains.com)"
   ],
   "bugs": {
-    "url": "https://github.com/PentiaLabs/generator-helix"
+    "url": "https://github.com/mainsy/generator-phelix"
   },
-  "homepage": "https://github.com/PentiaLabs/generator-helix#readme",
-  "author": "Emil Klein <eok@pentia.dk>",
+  "homepage": "https://github.com/mainsy/generator-phelix#readme",
+  "author": "Paul Mains <hello@paulmains.com>",
   "license": "MIT",
   "dependencies": {
     "chalk": "^1.1.3",

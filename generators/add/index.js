@@ -11,8 +11,7 @@ const util = require('../app/utility');
 module.exports = class extends yeoman {
 	constructor(args, opts) {
 		super(args, opts);
-		this.argument('ProjectName', { type: String, required: false, desc: 'Name of the project' });
-		this.argument('VendorPrefix', { type: String, required: false, desc: 'Vendor prefix used in the creation of project structure' });
+		this.argument('ProjectName', { type: String, required: false, desc: 'Name of the project (please use uppercase first character' });
 	}
 
 	init() {
@@ -41,15 +40,7 @@ module.exports = class extends yeoman {
 			message:'Source code folder name',
 			default: 'src',
 			store: true
-		},
-		{
-			type:'input',
-			name:'VendorPrefix',
-			message:'Enter optional vendor prefix',
-			default: this.options.VendorPrefix,
-			store: false
-		}
-		];
+		}];
 
 		this.prompt(questions).then((answers) => {
 			this.settings = answers;
@@ -67,10 +58,10 @@ module.exports = class extends yeoman {
 				{
 					name: 'Feature layer?',
 					value: 'Feature'
-				}, {
+				},{
 					name: 'Foundation layer?',
 					value: 'Foundation'
-				}, {
+				},{
 					name: 'Project layer?',
 					value: 'Project'
 				},
@@ -78,29 +69,8 @@ module.exports = class extends yeoman {
 		}];
 
 		this.prompt(questions).then((answers) => {
-			this.layer = answers.layer;
-             
-  
-			if (this.settings.VendorPrefix === '' || this.settings.VendorPrefix === undefined ) {
-				this.settings.LayerPrefixedProjectName = `${this.layer}.${this.settings.ProjectName}`;
-			} else {
-				this.settings.LayerPrefixedProjectName = `${this.settings.VendorPrefix}.${this.layer}.${this.settings.ProjectName}`;
-			}
-
-			done();
-		});
-	}
-
-	askForModuleGroup() {
-		const done = this.async();
-		const questions = [{
-			type:'input',
-			name: 'modulegroup',
-			message: 'Enter optional Module Group '
-		}];
-
-		this.prompt(questions).then((answers) => { 
-			this.modulegroup = answers.modulegroup ? answers.modulegroup : '';
+			this.settings.Layer = answers.layer;
+			this.settings.LayerPrefixedProjectName = `${this.settings.Layer}.${this.settings.ProjectName}`;
 			done();
 		});
 	}
@@ -124,26 +94,45 @@ module.exports = class extends yeoman {
 
 	_buildTemplateData() {
 		this.templatedata.layerprefixedprojectname = this.settings.LayerPrefixedProjectName;
+		this.templatedata.date = new Date().getFullYear();
 		this.templatedata.projectname = this.settings.ProjectName;
 		this.templatedata.vendorprefix = this.settings.VendorPrefix;
 		this.templatedata.projectguid = guid.v4();
-		this.templatedata.layer = this.layer;
-		this.templatedata.lowercasedlayer = this.layer.toLowerCase();
+		this.templatedata.layer = this.settings.Layer;
+		this.templatedata.lowercasedlayer = this.settings.Layer.toLowerCase();
 		this.templatedata.target = this.target;
 	}
 
 	_copyProjectItems() {
 		mkdir.sync(this.settings.ProjectPath);
+		mkdir.sync(path.join(this.settings.ProjectPath, 'Areas', this.settings.ProjectName, 'Models'));
+		mkdir.sync(path.join(this.settings.ProjectPath, 'Areas', this.settings.ProjectName, 'Controllers'));
+		mkdir.sync(path.join(this.settings.ProjectPath, 'Areas', this.settings.ProjectName, 'Views'));
+
+		this.fs.copyTpl(
+			this.templatePath('Views/web.config'), 
+			this.destinationPath(
+				path.join(
+					this.settings.ProjectPath,
+					'Areas',
+					this.settings.ProjectName,
+					'Views',
+					'web.config'
+				)
+			), 
+			this.templatedata);
+		
 		if(this.settings.serialization) {
 			this.fs.copyTpl(
 				this.templatePath('_project.unicorn.csproj'),
 				this.destinationPath(
 					path.join(
 						this.settings.ProjectPath,
-						this.settings.LayerPrefixedProjectName + '.csproj')
-					),
-					this.templatedata
-				);
+						this.settings.LayerPrefixedProjectName + '.csproj'
+					)
+				),
+				this.templatedata
+			);
 		} else {
 			this.fs.copyTpl(
 				this.templatePath('_project.csproj'),
@@ -164,7 +153,7 @@ module.exports = class extends yeoman {
 				this.templatedata
 			);
 
-			//if we have publishsettings.targets, then copy in PublishProfiles/local.pubxml
+		//if we have publishsettings.targets, then copy in PublishProfiles/local.pubxml
 		fs.access(this.destinationPath('publishsettings.targets'), fs.constants.R_OK, (err) => {
 			if(err === null){
 				this.fs.copyTpl(
@@ -176,13 +165,6 @@ module.exports = class extends yeoman {
 				);
 			}
 		});
-	}
-
-	_copySolutionSpecificItems(){
-		this.fs.copyTpl(
-			this.destinationPath('helix-template/**/*'), 
-			this.destinationPath(this.settings.ProjectPath),
-			this.templatedata);
 	}
 
 	_renameProjectFile() {
@@ -200,39 +182,49 @@ module.exports = class extends yeoman {
 	}
 
 	_copySerializationItems() {
-		mkdir.sync(path.join(this.settings.sourceFolder, this.layer, this.settings.ProjectName, 'serialization' ));
+		mkdir.sync(path.join(this.settings.sourceFolder, this.settings.Layer, this.settings.ProjectName, 'serialization' ));
 		const serializationDestinationFile = path.join(
 			this.settings.ProjectPath,
 			'App_Config/Include',
-			this.settings.LayerPrefixedProjectName,
-			'serialization.config'
+			this.settings.Layer,
+			this.settings.ProjectName + '.Serialization.config'
 		);
 		this.fs.copyTpl(this.templatePath('_serialization.config'), this.destinationPath(serializationDestinationFile), this.templatedata);
 	}
 
 	writing() {
-		this.settings.ProjectPath = path.join(this.settings.sourceFolder, this.layer, this.modulegroup, this.settings.ProjectName, 'code' );
+		this.settings.ProjectPath = path.join(
+			this.settings.sourceFolder, 
+			this.settings.Layer, 
+			this.settings.ProjectName, 
+			'code'
+		);
+		
 		this._copyProjectItems();
 
-		if(this.settings.serialization) {
+		if(this.settings.serialization) 
 			this._copySerializationItems();
-		}
-
-		if(fs.existsSync(this.destinationPath('helix-template'))) {
-			this._copySolutionSpecificItems();
-		}
 
 		const files = fs.readdirSync(this.destinationPath());
 		const SolutionFile = files.find(file => file.indexOf('.sln') > -1);
-		const scriptParameters = '-SolutionFile \'' + this.destinationPath(SolutionFile) + '\' -Name ' + this.settings.LayerPrefixedProjectName + ' -Type ' + this.layer + ' -ProjectPath \'' + this.settings.ProjectPath + '\'' + ' -SolutionFolderName ' + this.templatedata.projectname;
+		
+		const scriptParameters = '-SolutionFile \'' + 
+									this.destinationPath(SolutionFile) + 
+									'\' -Name ' + 
+									this.settings.LayerPrefixedProjectName + 
+									' -Type ' + 
+									this.settings.Layer + 
+									' -ProjectPath \'' + 
+									this.settings.ProjectPath + 
+									'\'' + 
+									' -SolutionFolderName ' + 
+									this.templatedata.projectname;
 
 		var pathToAddProjectScript = path.join(this._sourceRoot, '../../../powershell/add-project.ps1');
 		powershell.runAsync(pathToAddProjectScript, scriptParameters);
 	}
 
 	end() {
-		if(fs.existsSync(this.destinationPath('helix-template/_project.csproj'))){
-			this._renameProjectFile();
-		}
+		
 	}
 };
